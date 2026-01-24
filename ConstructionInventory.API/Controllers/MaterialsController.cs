@@ -20,7 +20,9 @@ namespace ConstructionInventory.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var materials = await _context.Materials.ToListAsync();
+            var materials = await _context.Materials
+            .Where(x => !x.IsDeleted)
+            .ToListAsync();
             return Ok(materials);
         }
 
@@ -62,7 +64,7 @@ namespace ConstructionInventory.API.Controllers
             {
                 return NotFound("Malzeme bulunamadı.");
             }
-            _context.Materials.Remove(material);
+            material.IsDeleted = true;
             await _context.SaveChangesAsync();
             return Ok($"{material.Name} başarıyla silindi.");
         }

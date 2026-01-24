@@ -61,5 +61,16 @@ namespace ConstructionInventory.API.Controllers
             await _context.SaveChangesAsync();
             return Ok($"{material.Name} başarıyla silindi.");
         }
+
+        //az kalanları uyarıcak stok takibi gibi yani
+        [HttpGet("critical-stock")]
+        public async Task<IActionResult> GetCriticalStock()
+        {
+            var criticalMaterials = await _context.Materials
+                .Where(x => x.StockCount < x.MinStockLimit)
+                .ToListAsync();
+
+            return Ok(criticalMaterials);
+        }
     }
 }

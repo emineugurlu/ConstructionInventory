@@ -84,6 +84,13 @@ namespace ConstructionInventory.API.Controllers
         public async Task<IActionResult> Restore(int id)
         {
             var material = await _context.Materials.FindAsync(id);
+            if (material == null) return NotFound();
+
+            material.IsDeleted = false; //silindi diye o damgayı kaldırır
+
+            await _context.SaveChangesAsync();
+            return Ok($"{material.Name} malzemesi başarıyla geri yüklendi.");
+
 
         }
     }

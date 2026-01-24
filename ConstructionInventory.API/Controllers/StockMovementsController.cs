@@ -26,10 +26,29 @@ namespace ConstructionInventory.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(StockMovement movement)
         {
+           //malzemeyi veri tabanında bul
+           var material = await _context.Materials.FindAsync(movement.MaterialId);
+              if (material == null)
+              {
+                return NotFound("Malzeme bulunamadı.");
+              }
+            //hareket tipine göre stoğu güncelle
+            if (movement.MovementType == 0) // giriş enuma göre takip et
+            {
+                material.StockCount += movement.Quantity;
+            }
+            else
+            { 
+                material.StockCount -= movement.Quantity;
+            }
+
+            //hareketi ve güncellenen stok miktarını kaydet
             movement.MovementDate = DateTime.Now;
             _context.StockMovements.Add(movement);
+
             await _context.SaveChangesAsync();
-            return Ok(movement);
+
+            return Ok(new { Message = "Stok güncellendi ve hareket kaydedildi", CurrentStock = material.StockCount });
         }
 
     }

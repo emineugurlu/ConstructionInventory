@@ -79,5 +79,12 @@ namespace ConstructionInventory.API.Controllers
 
             return Ok(criticalMaterials);
         }
+        //silinen olursa kurtarmak için yazdım bunu
+        [HttpPost("restore/{id}")]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var material = await _context.Materials.FindAsync(id);
+
+        }
     }
 }

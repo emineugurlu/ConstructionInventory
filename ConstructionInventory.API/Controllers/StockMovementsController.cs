@@ -50,6 +50,17 @@ namespace ConstructionInventory.API.Controllers
 
             return Ok(new { Message = "Stok güncellendi ve hareket kaydedildi", CurrentStock = material.StockCount });
         }
+        //sadece bir şantiyeyi getirir bu üsteki get ise tüm listeyi getirir
+        [HttpGet("site/{siteId}")] // burda arayacak bulacak ondan böyle yazdık
+        public async Task<IActionResult> GetBySite(int siteId)
+        {
+            var movements = await _context.StockMovements
+                .Where(sm => sm.ConstructionSiteId == siteId)
+                .ToListAsync();
+            if (movements.Count == 0) return NotFound("Bu şantiyeye ait henüz bir hareket yok.");
+
+            return Ok(movements);
+        }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ConstructionInventory.Data;
+using ConstructionInventory.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,5 +23,16 @@ namespace ConstructionInventory.API.Controllers
             var materials = await _context.Materials.ToListAsync();
             return Ok(materials);
         }
+
+        //malzeme ekleme
+        [HttpPost]
+        public async Task<IActionResult> Create(Material material)
+        {
+            _context.Materials.Add(material);
+            await _context.SaveChangesAsync();
+            return Ok(material);
+
+        }
+
     }
 }

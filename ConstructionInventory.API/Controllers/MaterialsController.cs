@@ -79,6 +79,15 @@ namespace ConstructionInventory.API.Controllers
 
             return Ok(criticalMaterials);
         }
+        //silinenleri çöp kutusuna taşıyor bu
+        [HttpGet("archive")]
+        public async Task<IActionResult> GetArchive()
+        {
+            var archived = await _context.Materials
+                .Where(x => x.IsDeleted) //true olanları seçicek burdan
+                .ToListAsync();
+            return Ok(archived);    
+        }
         //silinen olursa kurtarmak için yazdım bunu
         [HttpPost("restore/{id}")]
         public async Task<IActionResult> Restore(int id)

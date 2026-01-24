@@ -19,3 +19,4 @@ namespace ConstructionInventory.Domain.Entities
         public string ProcessedBy { get; set; } = null; // işlemi yapan kişi 
     }
 }
+

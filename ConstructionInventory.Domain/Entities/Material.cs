@@ -21,5 +21,6 @@ namespace ConstructionInventory.Domain.Entities
         public decimal MinStockLimit { get; set; } // Kritik stok limiti örn 5 kalırsa uyarı ver
         [Required(ErrorMessage = "Malzeme ölçü birimi boş bırakılamaz(Adet,Ton, vb.).")]
         public string Unit { get; set; } // Ölçü birimi 
+        public bool IsDeleted { get; set; } = false;
     }
 }

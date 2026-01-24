@@ -28,6 +28,11 @@ namespace ConstructionInventory.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Material material)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); //kurallara uyulmazsa hata atıcak kullanıcıya
+            }
+
             _context.Materials.Add(material);
             await _context.SaveChangesAsync();
             return Ok(material);

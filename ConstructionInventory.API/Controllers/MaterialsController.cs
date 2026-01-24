@@ -34,5 +34,32 @@ namespace ConstructionInventory.API.Controllers
 
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, Material updatedMaterial)
+        {
+            var material = await _context.Materials.FindAsync(id);
+            if (material == null)
+            {
+                return NotFound("Malzeme bulunamadı.");
+            }
+            material.Name = updatedMaterial.Name;
+            material.MinStockLimit = updatedMaterial.MinStockLimit;
+            material.Unit = updatedMaterial.Unit;
+            await _context.SaveChangesAsync();
+            return Ok("Malzeme başarıyla güncellendi.");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var material = await _context.Materials.FindAsync(id);
+            if (material == null)
+            {
+                return NotFound("Malzeme bulunamadı.");
+            }
+            _context.Materials.Remove(material);
+            await _context.SaveChangesAsync();
+            return Ok($"{material.Name} başarıyla silindi.");
+        }
     }
 }

@@ -66,17 +66,35 @@ namespace ConstructionInventory.API.Services
             };
         }
 
-        public async Task<bool> MoveStockAsync(int materialId, int siteId, decimal quantity, MovementType type, string note)
+        public async Task<bool> MoveStockAsync(int materialId, int siteId, decimal quantity, MovementType type )
         {
             var m = await _context.Materials.FindAsync(materialId);
-            if (m == null || m.IsDeleted) return false;
+            if (m == null || m.IsDeleted) return false; 
+
+            
             if (type == MovementType.Exit || type == MovementType.Waste)
             {
                 if (m.StockCount < quantity) return false;
                 m.StockCount -= (int)quantity;
             }
-            else { m.StockCount += (int)quantity; }
-            _context.StockMovements.Add(new StockMovement { MaterialId = materialId, Quantity = quantity, MovementType = type, MovementDate = DateTime.Now });
+            else
+            {
+                m.StockCount += (int)quantity;
+            }
+
+            var movement = new StockMovement
+            {
+                MaterialId = materialId,
+                ConstructionSiteId = siteId,
+                Quantity = quantity,
+                MovementType = type,
+                MovementDate = DateTime.Now,
+                ProcessedBy = "Sistem" 
+            };
+
+           
+
+            _context.StockMovements.Add(movement);
             await _context.SaveChangesAsync();
             return true;
         }

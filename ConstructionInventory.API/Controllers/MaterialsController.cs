@@ -31,7 +31,7 @@ namespace ConstructionInventory.API.Controllers
 
         [HttpPost("move-stock")]
         public async Task<IActionResult> MoveStock(int materialId, int siteId, decimal quantity, MovementType type, string note) =>
-            await _materialService.MoveStockAsync(materialId, siteId, quantity, type, note) ? Ok("Başarılı") : BadRequest("İşlem başarısız.");
+            await _materialService.MoveStockAsync(materialId, siteId, quantity, type) ? Ok("Başarılı") : BadRequest("İşlem başarısız.");
 
         [HttpGet("export-excel")]
         public async Task<IActionResult> ExportToExcel()

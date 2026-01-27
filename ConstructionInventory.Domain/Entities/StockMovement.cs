@@ -17,6 +17,7 @@ namespace ConstructionInventory.Domain.Entities
        
         public DateTime MovementDate { get; set; } // ne zaman yapıldı
         public string? ProcessedBy { get; set; } = null; // işlemi yapan kişi 
+       
     }
 }
 

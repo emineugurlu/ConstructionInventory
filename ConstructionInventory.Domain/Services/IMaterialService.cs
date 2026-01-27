@@ -18,6 +18,6 @@ namespace ConstructionInventory.Domain.Services
         Task<List<Material>> GetCriticalStockAsync();
         Task<List<Material>> GetArchivedAsync();
         Task<StockDashboardDto> GetDashboardStatsAsync();
-        Task<bool> MoveStockAsync(int materialId, int siteId, decimal quantity, MovementType type, string note);
+        Task<bool> MoveStockAsync(int materialId, int siteId, decimal quantity, MovementType type);
     }
 }

@@ -198,11 +198,19 @@ namespace ConstructionInventory.API.Controllers
                 //verileri doldurrr hadiii
                 for (int i = 0; i < materials.Count; i++)
                 {
-                    worksheet.Cell(i + 2, 1).Value = materials[i].Id;
-                    worksheet.Cell(i + 2, 2).Value = materials[i].Name;
-                    worksheet.Cell(i + 2, 3).Value = materials[i].StockCount;
-                    worksheet.Cell(i + 2, 4).Value = materials[i].Unit;
-                    worksheet.Cell(i + 2, 5).Value = materials[i].MinStockLimit;
+                    var currentRow = i + 2;
+                    worksheet.Cell(currentRow, 1).Value = materials[i].Id;
+                    worksheet.Cell(currentRow, 2).Value = materials[i].Name;
+                    worksheet.Cell(currentRow, 3).Value = materials[i].StockCount;
+                    worksheet.Cell(currentRow, 4).Value = materials[i].Unit;
+                    worksheet.Cell(currentRow, 5).Value = materials[i].MinStockLimit;
+
+                    // Eğer stok miktarı kritik limitin altındaysa o satırı KIRMIZI yap!
+                    if (materials[i].StockCount < materials[i].MinStockLimit)
+                    {
+                        worksheet.Row(currentRow).Style.Fill.BackgroundColor = XLColor.Alizarin; // Şık bir kırmızı
+                        worksheet.Row(currentRow).Style.Font.FontColor = XLColor.White; // Beyaz yazı
+                    }
                 }
 
                 //tabloyu güzelleştirim birazz :)

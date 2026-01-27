@@ -134,7 +134,35 @@ namespace ConstructionInventory.API.Controllers
         {
             //malzeme bul abiiii
             var material = await _context.Materials.FindAsync (materialId);
-            
+            if (material == null || material.IsDeleted) return NotFound("Malzeme bulunamadı");
+
+            //stok miktarını bir zahmet güncelle
+            if(type == MovementType.Out) // malzeme gidiyorsaaa
+            {
+                if (material.StockCount < quantity) return BadRequest("Yetersiz stok");
+                material.StockCount -=(int)quantity;
+            }
+
+            else //ifin tersi bir zahmet anla
+            {
+                material.StockCount += (int)quantity;
+            }
+
+            var movement = new StockMovement
+            {
+                MaterialId = materialId,
+                ConstructionSiteId = siteId,
+                Quantity = quantity,
+                MovementType = type,
+                MovementDate = DateTime.Now,
+                ProcessedBy = "Admin"
+
+            };
+
+         _context.StockMovements.Add (movement);
+          await _context.SaveChangesAsync();
+
+
         }
     }
 }

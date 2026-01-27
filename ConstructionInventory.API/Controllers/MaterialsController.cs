@@ -165,5 +165,16 @@ namespace ConstructionInventory.API.Controllers
             return Ok(new { Message = "Stok hareketi başarıyla kaydedildi.", NewStock = material.StockCount });
 
         }
+
+        [HttpGet("history/{materialId}")]
+        public async Task<IActionResult> GetMaterialHistory(int materialId)
+        {
+            var history = await _context.StockMovements
+                .Where(x => x.MaterialId == materialId)
+                .OrderByDescending (x=> x.MovementDate)
+                .ToListAsync();
+            return Ok(history);
+
+        }
     }
 }

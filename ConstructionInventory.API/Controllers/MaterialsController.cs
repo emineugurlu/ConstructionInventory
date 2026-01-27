@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ConstructionInventory.Domain.DTOs;
 using ConstructionInventory.Domain.Enums;
+using ClosedXML.Excel;
 
 namespace ConstructionInventory.API.Controllers
 {
@@ -16,7 +17,7 @@ namespace ConstructionInventory.API.Controllers
 
         public MaterialsController(AppDbContext context)
         {
-           _context = context;
+            _context = context;
         }
         //malzeme listeleme
         [HttpGet]
@@ -32,7 +33,7 @@ namespace ConstructionInventory.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Material material)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState); //kurallara uyulmazsa hata atıcak kullanıcıya
             }
@@ -88,7 +89,7 @@ namespace ConstructionInventory.API.Controllers
             var archived = await _context.Materials
                 .Where(x => x.IsDeleted) //true olanları seçicek burdan
                 .ToListAsync();
-            return Ok(archived);    
+            return Ok(archived);
         }
         //silinen olursa kurtarmak için yazdım bunu
         [HttpPost("restore/{id}")]
@@ -129,21 +130,21 @@ namespace ConstructionInventory.API.Controllers
             return Ok(stats);
         }
 
-        [HttpPost ("move-stock")]
-        public async Task<IActionResult> MoveStock (int materialId, int siteId, decimal quantity, MovementType type, string note)
+        [HttpPost("move-stock")]
+        public async Task<IActionResult> MoveStock(int materialId, int siteId, decimal quantity, MovementType type, string note)
         {
             //malzeme bul abiiii
-            var material = await _context.Materials.FindAsync (materialId);
+            var material = await _context.Materials.FindAsync(materialId);
             if (material == null || material.IsDeleted) return NotFound("Malzeme bulunamadı");
 
             //stok miktarını bir zahmet güncelle
-            if(type == MovementType.Exit || type == MovementType.Waste) // malzeme gidiyorsaaa
+            if (type == MovementType.Exit || type == MovementType.Waste) // malzeme gidiyorsaaa
             {
                 if (material.StockCount < quantity) return BadRequest("Yetersiz stok");
-                material.StockCount -=(int)quantity;
+                material.StockCount -= (int)quantity;
             }
 
-            else if(type ==MovementType.Entry || type == MovementType.Return) //ifin tersi bir zahmet anla
+            else if (type == MovementType.Entry || type == MovementType.Return) //ifin tersi bir zahmet anla
             {
                 material.StockCount += (int)quantity;
             }
@@ -159,8 +160,8 @@ namespace ConstructionInventory.API.Controllers
 
             };
 
-         _context.StockMovements.Add (movement);
-          await _context.SaveChangesAsync();
+            _context.StockMovements.Add(movement);
+            await _context.SaveChangesAsync();
 
             return Ok(new { Message = "Stok hareketi başarıyla kaydedildi.", NewStock = material.StockCount });
 
@@ -171,7 +172,7 @@ namespace ConstructionInventory.API.Controllers
         {
             var history = await _context.StockMovements
                 .Where(x => x.MaterialId == materialId)
-                .OrderByDescending (x=> x.MovementDate)
+                .OrderByDescending(x => x.MovementDate)
                 .ToListAsync();
             return Ok(history);
 
@@ -187,8 +188,37 @@ namespace ConstructionInventory.API.Controllers
                 var worksheet = workbook.Worksheets.Add("Malzeme Listesi");
 
                 //Başlıkları oluşturrr
+                worksheet.Cell(1, 1).Value = "ID";
+                worksheet.Cell(1, 2).Value = "Malzeme Adı";
+                worksheet.Cell(1, 3).Value = "Stok Miktarı";
+                worksheet.Cell(1, 4).Value = "Birim";
+                worksheet.Cell(1, 5).Value = "Kritik Limiti";
 
-               
+
+                //verileri doldurrr hadiii
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 1).Value = materials[i].Id;
+                    worksheet.Cell(i + 2, 2).Value = materials[i].Name;
+                    worksheet.Cell(i + 2, 3).Value = materials[i].StockCount;
+                    worksheet.Cell(i + 2, 4).Value = materials[i].Unit;
+                    worksheet.Cell(i + 2, 5).Value = materials[i].MinStockLimit;
+                }
+
+                //tabloyu güzelleştirim birazz :)
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+
+                    return File(
+                        content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Santiye_Stok_Raporu.xlsx"
+                    );
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ConstructionInventory.Domain.DTOs;
+using ConstructionInventory.Domain.Enums;
 
 namespace ConstructionInventory.API.Controllers
 {
@@ -126,6 +127,14 @@ namespace ConstructionInventory.API.Controllers
             };
 
             return Ok(stats);
+        }
+
+        [HttpPost ("move-stock")]
+        public async Task<IActionResult> MoveStock (int materialId, int siteId, decimal quantity, MovementType type, string note)
+        {
+            //malzeme bul abiiii
+            var material = await _context.Materials.FindAsync (materialId);
+            
         }
     }
 }

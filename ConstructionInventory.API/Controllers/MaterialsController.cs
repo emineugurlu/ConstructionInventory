@@ -162,6 +162,7 @@ namespace ConstructionInventory.API.Controllers
          _context.StockMovements.Add (movement);
           await _context.SaveChangesAsync();
 
+            return Ok(new { Message = "Stok hareketi başarıyla kaydedildi.", NewStock = material.StockCount });
 
         }
     }

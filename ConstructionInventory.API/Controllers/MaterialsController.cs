@@ -176,5 +176,20 @@ namespace ConstructionInventory.API.Controllers
             return Ok(history);
 
         }
+
+        [HttpGet("export-excel")]
+        public IActionResult ExportToExcel()
+        {
+            var materials = _context.Materials.Where(x => !x.IsDeleted).ToList();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Malzeme Listesi");
+
+                //Başlıkları oluşturrr
+
+               
+            }
+        }
     }
 }

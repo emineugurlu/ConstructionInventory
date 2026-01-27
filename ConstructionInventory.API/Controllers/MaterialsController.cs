@@ -103,5 +103,29 @@ namespace ConstructionInventory.API.Controllers
 
 
         }
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboard()
+        {
+            // Veritabanındaki tüm malzemeleri bir listeye alıyoruz
+            var allMaterials = await _context.Materials.ToListAsync();
+
+            var stats = new StockDashboardDto
+            {
+                // Silinmemiş olanların toplam sayısı
+                TotalMaterialCount = allMaterials.Count(x => !x.IsDeleted),
+
+                // Hem silinmemiş hem de stok miktarı limitin altına düşmüş olanlar
+                CriticalStockCount = allMaterials.Count(x => !x.IsDeleted && x.StockCount < x.MinStockLimit),
+
+                // Veritabanında duran ama 'silindi' işaretlenmiş olanlar
+                ArchivedMaterialCount = allMaterials.Count(x => x.IsDeleted),
+
+                // Depodaki tüm fiziksel ürünlerin toplamı (Örn: 10 torba çimento + 20 adet demir = 30)
+                TotalProductQuantity = allMaterials.Where(x => !x.IsDeleted).Sum(x => (long)x.StockCount)
+            };
+
+            return Ok(stats);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace ConstructionInventory.Domain.DTOs
         public int TotalMaterialCount { get; set; }
         public int CriticalStockCount { get; set; }
         public int ArchivedMaterialCount { get; set; }
-        public long TotalStockQuantity { get; set; }
+        public long TotalProductQuantity { get; set; }
 
     }
 }

@@ -3,6 +3,7 @@ using ConstructionInventory.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ConstructionInventory.Domain.DTOs;
 
 namespace ConstructionInventory.API.Controllers
 {

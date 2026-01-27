@@ -1,13 +1,15 @@
+using ConstructionInventory.API.Services;
 using ConstructionInventory.Data;
+using ConstructionInventory.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Servisleri Kaydet
 builder.Services.AddControllers(); // Bu satýr Controller'larýný sisteme tanýtýr!
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // Swagger (test ekraný) için gerekli
+builder.Services.AddScoped<IMaterialService, MaterialService>();
 
 // Veritabaný baðlantýsý
 builder.Services.AddDbContext<AppDbContext>(options =>

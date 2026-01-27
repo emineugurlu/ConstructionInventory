@@ -10,8 +10,14 @@ namespace ConstructionInventory.Domain.Services
 {
     public interface IMaterialService
     {
-        Task<List<Material>> GetAllMaterialsAsync();
+        Task<List<Material>> GetAllActiveAsync();
+        Task CreateAsync(Material material);
+        Task<bool> UpdateAsync(int id, Material updatedMaterial);
+        Task<bool> DeleteAsync(int id);
+        Task<bool> RestoreAsync(int id);
+        Task<List<Material>> GetCriticalStockAsync();
+        Task<List<Material>> GetArchivedAsync();
         Task<StockDashboardDto> GetDashboardStatsAsync();
-        Task<bool> MoveStockAsync(int materialId, decimal quantity, MovementType type);
+        Task<bool> MoveStockAsync(int materialId, int siteId, decimal quantity, MovementType type, string note);
     }
 }

@@ -16,7 +16,7 @@ namespace ConstructionInventory.Domain.Entities
         public MovementType MovementType { get; set; } // hareket tipi
        
         public DateTime MovementDate { get; set; } // ne zaman yapıldı
-        public string ProcessedBy { get; set; } = null; // işlemi yapan kişi 
+        public string? ProcessedBy { get; set; } = null; // işlemi yapan kişi 
     }
 }
 

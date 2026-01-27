@@ -137,13 +137,13 @@ namespace ConstructionInventory.API.Controllers
             if (material == null || material.IsDeleted) return NotFound("Malzeme bulunamadı");
 
             //stok miktarını bir zahmet güncelle
-            if(type == MovementType.Exit) // malzeme gidiyorsaaa
+            if(type == MovementType.Exit || type == MovementType.Waste) // malzeme gidiyorsaaa
             {
                 if (material.StockCount < quantity) return BadRequest("Yetersiz stok");
                 material.StockCount -=(int)quantity;
             }
 
-            else //ifin tersi bir zahmet anla
+            else if(type ==MovementType.Entry || type == MovementType.Return) //ifin tersi bir zahmet anla
             {
                 material.StockCount += (int)quantity;
             }

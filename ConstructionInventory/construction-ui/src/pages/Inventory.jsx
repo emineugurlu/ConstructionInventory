@@ -1,75 +1,72 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { AlertCircle, Package, TrendingUp } from 'lucide-react';
+import { Search, AlertCircle } from 'lucide-react';
 
 export default function Inventory() {
   const [materials, setMaterials] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
+    // Backend verisini çekiyoruz
     axios.get('https://localhost:7106/api/Materials')
       .then(res => setMaterials(res.data))
       .catch(err => console.error(err));
   }, []);
 
+  const filtered = materials.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex justify-between items-end mb-10">
+    <div className="space-y-8">
+      <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-4xl font-black text-white tracking-tighter mb-2">Genel <span className="text-blue-500">Envanter</span></h1>
-          <p className="text-slate-500 font-medium">Metrosis projeleri genelindeki güncel stok durumları.</p>
+          <h1 className="text-3xl font-black text-[#111827]">Malzeme <span className="text-[#1E40AF]">Listesi</span></h1>
+          <p className="text-gray-500 text-sm mt-1">Metrosis güncel stok verileri.</p>
+        </div>
+        
+        {/* Arama Input: Hover ve Fokus efektli */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input 
+            type="text"
+            placeholder="Malzeme ara..."
+            className="pl-12 pr-6 py-3 bg-white border border-gray-200 rounded-2xl w-80 shadow-sm focus:ring-2 focus:ring-[#1E40AF] outline-none transition-all"
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
       </div>
 
-      {/* ÖZET KARTLAR (StockDashboardDto Mantığı) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <StatCard title="Toplam Ürün" value={materials.length} icon={<Package className="text-blue-500" />} />
-        <StatCard title="Kritik Seviye" value={materials.filter(m => m.stockCount < 10).length} icon={<AlertCircle className="text-red-500" />} isAlert />
-        <StatCard title="Aylık Hareket" value="+12.4%" icon={<TrendingUp className="text-emerald-500" />} />
-      </div>
-
-      {/* MODERN TABLO */}
-      <div className="bg-[#151b26] rounded-[2.5rem] border border-white/5 shadow-2xl overflow-hidden">
+      {/* Tablo Tasarımı: Rounded corners ve Shadow */}
+      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+          <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-10 py-6">Malzeme Tanımı</th>
-              <th className="px-10 py-6 text-center">Stok Miktarı</th>
-              <th className="px-10 py-6 text-center">Birim</th>
-              <th className="px-10 py-6 text-right">Durum Analizi</th>
+              <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Malzeme Adı</th>
+              <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Mevcut Stok</th>
+              <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Durum</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
-            {materials.map(m => (
-              <tr key={m.id} className="hover:bg-blue-600/[0.02] transition-colors group">
-                <td className="px-10 py-6 font-bold text-white text-lg group-hover:text-blue-400 transition-colors">{m.name}</td>
-                <td className="px-10 py-6 text-center font-mono text-xl text-slate-300">{m.stockCount}</td>
-                <td className="px-10 py-6 text-center text-slate-500 font-medium italic">{m.unit}</td>
-                <td className="px-10 py-6 text-right">
-                  {m.stockCount < 10 
-                    ? <span className="bg-red-500/10 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black border border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]">KRİTİK - SİPARİŞ VER</span>
-                    : <span className="bg-blue-500/10 text-blue-500 px-4 py-2 rounded-xl text-[10px] font-black border border-blue-500/20">STOK GÜVENLİ</span>
-                  }
+          <tbody className="divide-y divide-gray-50 text-[#111827]">
+            {filtered.map(m => (
+              <tr key={m.id} className="hover:bg-blue-50/30 transition-colors group">
+                <td className="px-8 py-6 font-bold">{m.name}</td>
+                <td className="px-8 py-6 font-mono font-bold text-[#1E40AF]">{m.stockCount} {m.unit}</td>
+                <td className="px-8 py-6">
+                  {/* Kritik stok: #DC2626 (kırmızı) */}
+                  {m.stockCount < 10 ? (
+                    <span className="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-[10px] font-black border border-red-100 flex items-center gap-2 w-fit">
+                      <AlertCircle size={14}/> KRİTİK SEVİYE
+                    </span>
+                  ) : (
+                    <span className="bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl text-[10px] font-black border border-emerald-100 w-fit block">
+                      STOK GÜVENLİ
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
-  );
-}
-
-function StatCard({ title, value, icon, isAlert }) {
-  return (
-    <div className="bg-[#151b26] p-8 rounded-[2rem] border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-500 shadow-sm hover:shadow-2xl">
-      <div className="relative z-10 flex justify-between items-start">
-        <div>
-          <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">{title}</p>
-          <p className={`text-4xl font-black tracking-tighter ${isAlert ? 'text-red-500' : 'text-white'}`}>{value}</p>
-        </div>
-        <div className="p-4 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform">{icon}</div>
-      </div>
-      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-600/5 rounded-full blur-3xl group-hover:bg-blue-600/10 transition-colors" />
     </div>
   );
 }

@@ -15,6 +15,10 @@ builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowReact",
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 var app = builder.Build();
 
 // 2. HTTP Ýstek Hattýný Yapýlandýr
@@ -26,7 +30,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-
+app.UseCors("AllowReact");
 // 3. Rotalarý Eþleþtir
 app.MapControllers(); // Adres çubuðuna yazýlanlarý Controller'lara yönlendirir
 
